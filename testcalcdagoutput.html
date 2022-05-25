@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<html lang="en">
+  <head>
+    <title>calcDagOutput - unit test</title>
+  </head>
+  <body>
+    calcDagOutput (calculate DAG (Directed Acyclic Graph) output) test<br />
+    Test/View coverage of file under test, using Chrome coverage tool<br />
+    View pass/fail using js console
+    <script type="module">
+      // Use Alt+P in vscode (installed some intelligent file string plugin to get this to work)
+      import {
+        setConfigForCalcDagOutput,
+        calcDagOutput,
+      } from "./calcdagoutput.js";
+      import { assert } from "https://asserta19.github.io/assert/assert.js";
+      let dag = {};
+
+      /**
+       * @type {(dag,node)=>Set}
+       */
+      let getNodeInputsConnectedToFn = (_dag, _node) => new Set();
+
+      /**
+       * @type {(dag,node)=>any}
+       */
+      let getNodeOfNodeInputFn = (_dag, nodeInput) => {
+        switch (nodeInput) {
+          case "2-i1":
+            return "2";
+          case "silence warning about less case clauses":
+            assert(false);
+            return null;
+          default:
+            assert(false);
+            return null;
+        }
+      };
+
+      /**
+       * @type {(dag: any, node: any) => Set}
+       */
+      let getInputsOfNodeFn = (_dag, _node) => {
+        assert(false);
+        return new Set();
+      };
+
+      /**
+       * @type {(dag: any, node: any, nodeInputsWithValues: any) => any}
+       */
+      let calcNodeOutputFn = (_dag, _node, _nodeInputsWithValues) => {
+        assert(false);
+        return 1234;
+      };
+
+      let getNumOfNodesFn = () => 2;
+      let getDefaultInputsFn = (_dag, _node) => ({});
+      setConfigForCalcDagOutput(
+        getNodeInputsConnectedToFn,
+        getNodeOfNodeInputFn,
+        getInputsOfNodeFn,
+        calcNodeOutputFn,
+        getNumOfNodesFn,
+        getDefaultInputsFn
+      );
+      try {
+        calcDagOutput({}, {});
+      } catch (e) {
+        assert(e.message === "cyclic or disconnected nodes detected");
+      }
+
+      //one input node and that is it!
+      getNumOfNodesFn = () => 1;
+      setConfigForCalcDagOutput(
+        getNodeInputsConnectedToFn,
+        getNodeOfNodeInputFn,
+        getInputsOfNodeFn,
+        calcNodeOutputFn,
+        getNumOfNodesFn,
+        getDefaultInputsFn
+      );
+      let outputs = calcDagOutput(dag, { i1: 8 });
+      assert(Object.keys(outputs).length === 1);
+      assert("i1" in outputs);
+      assert(outputs["i1"] === 8);
+
+      //one input node and one non-input node: 1->2
+      getNumOfNodesFn = () => 2;
+      getInputsOfNodeFn = (_dag, node) => {
+        assert(node === "2");
+        return new Set(["2-i1"]);
+      };
+      calcNodeOutputFn = (_dag, node, nodeInputsWithValues) => {
+        assert(node === "2");
+        // assuming that it will add all inputs and multiply by 2
+        let total = 0;
+        for (const inputNode in nodeInputsWithValues) {
+          total += nodeInputsWithValues[inputNode];
+        }
+        return total * 2;
+      };
+      getNodeInputsConnectedToFn = (_dag, node) => {
+        assert(["1", "2"].includes(node));
+        if (node === "1") {
+          return new Set(["2-i1"]);
+        }
+        return new Set();
+      };
+      setConfigForCalcDagOutput(
+        getNodeInputsConnectedToFn,
+        getNodeOfNodeInputFn,
+        getInputsOfNodeFn,
+        calcNodeOutputFn,
+        getNumOfNodesFn,
+        getDefaultInputsFn
+      );
+      outputs = calcDagOutput(dag, { 1: 8 });
+      assert(Object.keys(outputs).length === 1);
+      assert("2" in outputs);
+      assert(outputs["2"] === 16);
+      console.log("Ran unit test successfully", outputs);
+    </script>
+  </body>
+</html>
