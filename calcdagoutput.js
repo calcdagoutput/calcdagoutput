@@ -1,36 +1,6 @@
 // unit testing and code coverage: use testcalcdagoutput.html and coverage tool of Chrome
 
 /**
- * @type {(dag,node)=>Set}
- */
-let getNodeInputsConnectedTo;
-
-/**
- * @type {(dag, nodeInput)=>any}
- */
-let getNodeOfNodeInput;
-
-/**
- * @type {(dag, node)=>Set}
- */
-let getInputsOfNode;
-
-/**
- * @type {(dag,node,nodeInputsWithValues)=>any}
- */
-let calcNodeOutput;
-
-/**
- * @type {(dag:any)=>number}
- */
-let getNumOfNodes;
-
-/**
- * @type {(dag,node)=>Object}
- */
-let getDefaultInputs;
-
-/**
  * @param {(dag,node)=>Set} getNodeInputsConnectedToFn params:dag, node.
  * Output:nodeInput Set.
  *
@@ -120,3 +90,33 @@ export function calcDagOutput(dag, inputs) {
   }
   return finalOutputs;
 }
+
+/**
+ * @type {(dag,node)=>Set}
+ */
+ let getNodeInputsConnectedTo;
+
+ /**
+  * @type {(dag, nodeInput)=>any}
+  */
+ let getNodeOfNodeInput;
+
+ /**
+  * @type {(dag, node)=>Set}
+  */
+ let getInputsOfNode;
+
+ /**
+  * @type {(dag,node,nodeInputsWithValues)=>any}
+  */
+ let calcNodeOutput;
+
+ /**
+  * @type {(dag:any)=>number}
+  */
+ let getNumOfNodes;
+
+ /**
+  * @type {(dag,node)=>Object}
+  */
+ let getDefaultInputs;
