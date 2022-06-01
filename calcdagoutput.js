@@ -14,9 +14,9 @@
  * params: dag, node, map of nodeInput to value.
  * Output: an output value
  *
- * @param {(dag:any)=>number} getNumOfNodesFn params:dag. Output: number.
+ * @param {null|(dag:any)=>number} getNumOfNodesFn params:dag. Output: number.
  *
- * @param {(dag,node)=>Object} getDefaultInputsFn params:dag, node.
+ * @param {(dag,node)=>Object} getConstInputsForNodeFn params:dag, node.
  * Output: map of output node to value.
  */
 export function setConfigForCalcDagOutput(
@@ -25,14 +25,14 @@ export function setConfigForCalcDagOutput(
   getInputsOfNodeFn,
   calcNodeOutputFn,
   getNumOfNodesFn,
-  getDefaultInputsFn
+  getConstInputsForNodeFn
 ) {
   getNodeInputsConnectedTo = getNodeInputsConnectedToFn;
   getNodeOfNodeInput = getNodeOfNodeInputFn;
   getInputsOfNode = getInputsOfNodeFn;
   calcNodeOutput = calcNodeOutputFn;
   getNumOfNodes = getNumOfNodesFn;
-  getDefaultInputs = getDefaultInputsFn;
+  getConstInputsForNode = getConstInputsForNodeFn;
 }
 
 /**
@@ -67,7 +67,7 @@ export function calcDagOutput(dag, inputs) {
         const nextLevelNode = getNodeOfNodeInput(dag, nodeInput);
         let calculatedInputs = foundInputsOfNextLevelNodes[nextLevelNode];
         if (calculatedInputs == null) {
-          calculatedInputs = getDefaultInputs(dag, nextLevelNode);
+          calculatedInputs = getConstInputsForNode(dag, nextLevelNode);
           foundInputsOfNextLevelNodes[nextLevelNode] = calculatedInputs;
         }
         calculatedInputs[nodeInput] = output;
@@ -85,8 +85,11 @@ export function calcDagOutput(dag, inputs) {
     }
     outputsOfPreviousLevel = outputsOfNextLevel;
   }
-  if (numOfNodesWhoseOutputWasCalculated != getNumOfNodes(dag)) {
-    throw new Error("cyclic or disconnected nodes detected");
+  if(Object.keys(foundInputsOfNextLevelNodes).length!==0) {
+	throw new Error("cyclical nodes detected");
+  }
+  if (getNumOfNodes && numOfNodesWhoseOutputWasCalculated != getNumOfNodes(dag)) {
+    throw new Error("disconnected nodes detected");
   }
   return finalOutputs;
 }
@@ -119,4 +122,4 @@ export function calcDagOutput(dag, inputs) {
  /**
   * @type {(dag,node)=>Object}
   */
- let getDefaultInputs;
+ let getConstInputsForNode;
