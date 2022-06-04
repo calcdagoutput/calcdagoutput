@@ -17,7 +17,7 @@
  * @param {null|(dag:any)=>number} getNumOfNodesFn params:dag. Output: number.
  *
  * @param {(dag,node)=>Object} getConstInputsForNodeFn params:dag, node.
- * Output: map of output node to value.
+ * Output: map of nodeInput to value.
  */
 export function setConfigForCalcDagOutput(
   getNodeInputsConnectedToFn,
