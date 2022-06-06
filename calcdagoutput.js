@@ -1,7 +1,7 @@
 // unit testing and code coverage: use testcalcdagoutput.html and coverage tool of Chrome
 
 /**
- * @param {(dag,node)=>Set} getNodeInputsConnectedToFn params:dag, node.
+ * @param {(dag,node)=>Set} getNodeInputsTakingInputFromFn params:dag, node.
  * Output:nodeInput Set.
  *
  * @param {(dag, nodeInput)=>any} getNodeOfNodeInputFn params: dag, nodeInput.
@@ -20,14 +20,14 @@
  * Output: map of nodeInput to value.
  */
 export function setConfigForCalcDagOutput(
-  getNodeInputsConnectedToFn,
+  getNodeInputsTakingInputFromFn,
   getNodeOfNodeInputFn,
   getInputsOfNodeFn,
   calcNodeOutputFn,
   getNumOfNodesFn,
   getConstInputsForNodeFn
 ) {
-  getNodeInputsConnectedTo = getNodeInputsConnectedToFn;
+  getNodeInputsTakingInputFrom = getNodeInputsTakingInputFromFn;
   getNodeOfNodeInput = getNodeOfNodeInputFn;
   getInputsOfNode = getInputsOfNodeFn;
   calcNodeOutput = calcNodeOutputFn;
@@ -59,7 +59,7 @@ export function calcDagOutput(dag, inputs) {
   while (Object.keys(outputsOfPreviousLevel).length > 0) {
     const outputsOfNextLevel = {};
     for (const [node, output] of Object.entries(outputsOfPreviousLevel)) {
-      const nodeInputs = getNodeInputsConnectedTo(dag, node);
+      const nodeInputs = getNodeInputsTakingInputFrom(dag, node);
       if (nodeInputs.size === 0) {
         finalOutputs[node] = output;
       }
@@ -97,7 +97,7 @@ export function calcDagOutput(dag, inputs) {
 /**
  * @type {(dag,node)=>Set}
  */
- let getNodeInputsConnectedTo;
+ let getNodeInputsTakingInputFrom;
 
  /**
   * @type {(dag, nodeInput)=>any}
